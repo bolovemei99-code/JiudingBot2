@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8000
 
 # Define environment variable
-ENV BOT_TOKEN=7263013347:AAFGaRqixDkGz4YZJyFA4PmQXKNJMAj236k
+ENV BOT_TOKEN=8231003819:AAGaSNhTFbxN0CVjg5oXD_VJ0MrF_v11ucM
 
 # Run bot.py when the container launches
 CMD ["python", "bot.py"]
