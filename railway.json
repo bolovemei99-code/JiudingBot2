@@ -1,1 +1,0 @@
-{  "build": {    "builder": "DOCKERFILE"  },  "deploy": {    "envs": {      "BOT_TOKEN": "8231003819:AAGaSNhTFbxN0CVjg5oXD_VJ0MrF_v11ucM"    }  }}
