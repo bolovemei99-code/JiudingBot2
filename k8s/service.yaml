@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jiudingbot2
+  labels:
+    app: jiudingbot2
+spec:
+  # Note: This bot doesn't expose HTTP endpoints, so service is optional
+  # If you add a web interface or webhook, uncomment and configure this
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: jiudingbot2
+
+---
+# If you want to expose metrics or a health endpoint, create a separate service
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: jiudingbot2-metrics
+#   labels:
+#     app: jiudingbot2
+# spec:
+#   type: ClusterIP
+#   ports:
+#   - port: 9090
+#     targetPort: 9090
+#     protocol: TCP
+#     name: metrics
+#   selector:
+#     app: jiudingbot2

@@ -6,8 +6,12 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 import os
 
+# 配置日志
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # 环境变量
-TOKEN = os.getenv("8231003819:AAEt5YEkLzW9575IYul0f-oXW_ZCYAlNExM")
+TOKEN = os.getenv("BOT_TOKEN", "8231003819:AAEt5YEkLzW9575IYul0f-oXW_ZCYAlNExM")
 PLATFORM_URL = os.getenv("PLATFORM_URL", "https://jdyl.me/?ref=tg")
 
 # 初始化数据库
@@ -40,15 +44,33 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
     c.execute("INSERT OR IGNORE INTO users (user_id, messages, last_active, vip_status) VALUES (?, ?, ?, ?)",
-              (user_id, 0, Your bot.py content goes here
+              (user_id, 0, datetime.now().isoformat(), 0))
+    conn.commit()
+    conn.close()
+    
+    keyboard = [[InlineKeyboardButton("🎰 访问平台", url=PLATFORM_URL)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text(WELCOME_TEXT, reply_markup=reply_markup)
 
-# Import necessary libraries
-import os
+async def tips(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    tip = random.choice(TIPS_EXAMPLES)
+    await update.message.reply_text(f"今日推荐：\n{tip}")
 
-# Define the bot functionality here
+async def subscribe(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("VIP订阅功能开发中，敬请期待！")
 
 def main():
-    print("Hello from the bot!")
+    logger.info("Starting bot...")
+    init_db()
+    
+    app = ApplicationBuilder().token(TOKEN).build()
+    
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("tips", tips))
+    app.add_handler(CommandHandler("subscribe", subscribe))
+    
+    logger.info("Bot started successfully!")
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
