@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  jiudingbot2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jiudingbot2
+    restart: unless-stopped
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - PLATFORM_URL=${PLATFORM_URL:-https://jdyl.me/?ref=tg}
+    volumes:
+      # Persist database
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "python.*bot.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Optional: Add monitoring services
+# Uncomment below to add monitoring stack
+#  prometheus:
+#    image: prom/prometheus:latest
+#    container_name: prometheus
+#    volumes:
+#      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+#      - prometheus-data:/prometheus
+#    ports:
+#      - "9090:9090"
+#    restart: unless-stopped
+#
+#  grafana:
+#    image: grafana/grafana:latest
+#    container_name: grafana
+#    volumes:
+#      - grafana-data:/var/lib/grafana
+#    ports:
+#      - "3000:3000"
+#    restart: unless-stopped
+
+volumes:
+  # Uncomment if using monitoring
+  # prometheus-data:
+  # grafana-data:

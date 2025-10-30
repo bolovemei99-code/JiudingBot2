@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jiudingbot2
+  labels:
+    app: jiudingbot2
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jiudingbot2
+  template:
+    metadata:
+      labels:
+        app: jiudingbot2
+        version: v1
+    spec:
+      containers:
+      - name: jiudingbot2
+        image: ghcr.io/bolovemei99-code/jiudingbot2:latest
+        imagePullPolicy: Always
+        env:
+        - name: BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: jiudingbot2-secrets
+              key: bot-token
+        - name: PLATFORM_URL
+          valueFrom:
+            configMapKeyRef:
+              name: jiudingbot2-config
+              key: platform-url
+              optional: true
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - pgrep
+            - -f
+            - "python.*bot.py"
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - pgrep
+            - -f
+            - "python.*bot.py"
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        volumeMounts:
+        - name: data
+          mountPath: /app/data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: jiudingbot2-pvc
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jiudingbot2-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  # storageClassName: standard  # Uncomment and set your storage class
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jiudingbot2-config
+data:
+  platform-url: "https://jdyl.me/?ref=tg"
+---
+# Create the secret manually using:
+# kubectl create secret generic jiudingbot2-secrets \
+#   --from-literal=bot-token='YOUR_BOT_TOKEN_HERE'
