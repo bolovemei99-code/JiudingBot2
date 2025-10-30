@@ -5,10 +5,10 @@ on:
     branches:
       - main
       - master
+      - 'copilot/**'  # Allow testing on copilot branches
   pull_request:
     branches:
-      - main
-      - master
+      - '**'  # Trigger on PRs to any branch
 
 env:
   REGISTRY: ghcr.io
